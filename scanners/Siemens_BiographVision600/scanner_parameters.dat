@@ -1,0 +1,69 @@
+# ============================================================================
+#  Siemens Biograph Vision 600 — Scanner Parameter Reference
+# ============================================================================
+#
+#  This file provides the verified physical parameters of the Siemens Biograph
+#  Vision 600 PET/CT scanner in a machine-readable format.
+#
+#  Sources:
+#    - van Sluis et al., J Nucl Med, 2019;60(7):1031-1036
+#    - Prenosil et al., J Nucl Med, 2022;63(3):476-484
+#    - Siemens Healthineers Technical Data Sheet, 2018
+#
+#  MCGPU-PET mapping notes are included as inline comments.
+#
+# ============================================================================
+
+# --- Crystal Geometry ---
+crystal_material             = LSO           # Lu2SiO5:Ce scintillator
+crystal_size_transaxial_mm   = 3.2           # mm
+crystal_size_axial_mm        = 3.2           # mm
+crystal_depth_mm             = 20.0          # mm (crystal length)
+crystal_pitch_transaxial_mm  = 3.2           # mm (no inter-crystal gap in model)
+crystal_pitch_axial_mm       = 3.2           # mm
+
+# --- Block / Module Layout ---
+crystals_per_block_transaxial = 5
+crystals_per_block_axial      = 5
+blocks_per_module             = 19           # blocks arrayed around the ring
+modules_per_ring              = 8            # physical detector modules
+crystal_rings_per_module      = 10           # 5 axial x 2 sub-rings
+
+# --- Ring-Level Parameters ---
+num_crystal_rings            = 80            # total axial crystal rings
+crystals_per_ring            = 760           # 19 x 8 x 5
+total_crystals               = 60800         # 80 x 760
+
+# --- Scanner Geometry ---
+detector_ring_diameter_cm    = 78.0          # inner detector ring diameter
+detector_ring_radius_cm      = 39.0          # MCGPU-PET: PSF_radius
+axial_fov_cm                 = 26.3          # MCGPU-PET: FOVZ / PSF_height
+transaxial_fov_cm            = 70.0          # patient bore
+bore_diameter_cm             = 78.0
+
+# --- Performance Parameters ---
+energy_resolution_percent    = 9.3           # FWHM at 511 keV -> MCGPU-PET: E_resol = 0.093
+timing_resolution_ps         = 210           # CRT FWHM in picoseconds
+coincidence_window_ns        = 4.7           # Coincidence time window
+spatial_resolution_1cm_mm    = 3.6           # NEMA NU 2-2018, transaxial, 1 cm offset
+sensitivity_center_cps_kBq   = 16.4          # NEMA NU 2-2018
+
+# --- Energy Window (Clinical Default) ---
+energy_window_low_keV        = 435           # -> MCGPU-PET: E_low  = 435000.0 eV
+energy_window_high_keV       = 585           # -> MCGPU-PET: E_high = 585000.0 eV
+
+# --- Sinogram Parameters (MCGPU-PET mapping) ---
+#
+#  The following values map the Vision 600 hardware to the MCGPU-PET sinogram
+#  discretization. Where the MCGPU-PET model uses simplified cylindrical
+#  geometry, the values are chosen to preserve physical consistency.
+#
+NROWS                        = 80            # Number of crystal rows (axial rings)
+NCRYSTALS                    = 760           # Crystals per ring
+NANGLES                      = 380           # Angular bins (NCRYSTALS / 2)
+NRAD                         = 339           # Radial bins (approx transaxial FOV / crystal_pitch + margin)
+NZS                          = 159           # Axial sinogram slices (2 x NROWS - 1)
+RES                          = 256           # Reconstructed image matrix (per transaxial slice)
+NE                           = 700           # Number of energy histogram bins
+MRD                          = 79            # Maximum ring difference (NROWS - 1)
+SPAN                         = 11            # Axial compression span
